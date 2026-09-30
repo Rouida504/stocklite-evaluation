@@ -1,10 +1,10 @@
 export class Stock {
   #produits = new Map();
 
-  ajouter(ref, nom, quantite, seuil = 0) {
+  ajouter(ref, nom, quantite, seuil = 0, categorie = 'divers') {
     if (!ref || !nom) throw new Error('La référence et le nom sont obligatoires');
     if (!Number.isInteger(quantite) || quantite < 0) throw new Error('Quantité invalide : entier positif attendu');
-    this.#produits.set(ref, { ref, nom, quantite, seuil });
+    this.#produits.set(ref, { ref, nom, quantite, seuil, categorie });
     return this.#produits.get(ref);
   }
 
@@ -25,12 +25,15 @@ export class Stock {
     return [...this.#produits.values()].sort((a, b) => a.ref.localeCompare(b.ref, 'fr'));
   }
 
+  parCategorie(categorie) {
+    return this.lister().filter((p) => p.categorie === categorie);
+  }
+
   // Produits en alerte : quantité inférieure ou égale au seuil
-  alertes({ seulementCritiques = false } = {}) {
+  alertes() {
     return this.lister()
       .filter((p) => p.quantite < p.seuil)
-      .map((p) => ({ ...p, critique: p.quantite === 0 }))
-      .filter((p) => !seulementCritiques || p.critique);
+      .sort((a, b) => a.quantite - b.quantite);
   }
 
   // Valeur totale du stock selon une table de prix { ref: prix }
