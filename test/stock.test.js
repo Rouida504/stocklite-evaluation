@@ -26,3 +26,10 @@ test('retirer refuse un stock insuffisant ou un produit inconnu', () => {
 test('ajouter refuse une quantité invalide', () => {
   assert.throws(() => new Stock().ajouter('A1', 'Vis', -3), /invalide/);
 });
+test('alertes inclut les produits dont la quantité est égale au seuil', () => {
+    const s = new Stock();
+    s.ajouter('A1', 'Vis', 5, 5); // Quantité égale au seuil (5 === 5)
+    const alertes = s.alertes();
+    assert.equal(alertes.length, 1);
+    assert.equal(alertes[0].ref, 'A1');
+});
